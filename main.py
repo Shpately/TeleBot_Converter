@@ -29,8 +29,11 @@ def values(message):
 @bot.message_handler(content_types=['text'])
 def convert(message):
     words = message.text.split(' ')
-    if len(words) > 3 and len(words) < 2:
+    if len(words) > 3 or len(words) < 2:
         raise APIException("Введите корректное число параметров")
+    if base == quote:
+        raise APIException("Нельзя конвертировать одну и ту же валюту")
+        
     base, quote, amount = words
     price = Converter.get_price(base, quote, amount)
     text = f"Цена {amount} {base} в {quote}: {price}"
