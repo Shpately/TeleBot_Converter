@@ -2,6 +2,7 @@ import requests
 import telebot
 
 from config import TOKEN, URL
+from extensions import Converter
 
 bot = telebot.TeleBot(TOKEN)
 
@@ -20,17 +21,18 @@ def start(message):
 
 
 @bot.message_handler(commands=['values'])
-def start(message):
+def values(message):
     text = "Список доступных валют: рубль, доллар, евро"
     bot.send_message(message.chat.id, text)
 
 
 @bot.message_handler(content_types=['text'])
-def start(message):
-    text = "УУУ"
+def convert(message):
+    base, quote, amount = message.text.split(' ')
+    price = Converter.get_price(base, quote, amount)
+    text = f"Цена {amount} {base} в {quote}: {price}"
     bot.send_message(message.chat.id, text)
 
 
 if __name__ == '__main__':
-    # init_db()
     bot.polling(none_stop=True)
