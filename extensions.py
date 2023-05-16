@@ -10,7 +10,11 @@ headers= {
         "apikey": "ipT969LyS8V3ywjZGmnsUgDEvEPMIgwU"
         }
     
-    
+        
+class APIException(Exception):
+    pass
+
+
 class Converter:
     def __init__(self):
         pass
