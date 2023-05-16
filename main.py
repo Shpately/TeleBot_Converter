@@ -1,13 +1,10 @@
-import requests
 import telebot
 
 from config import TOKEN, URL
-from extensions import Converter, APIException
+from extensions import Converter, APIException, keys
 
 bot = telebot.TeleBot(TOKEN)
 
-# https://apilayer.com/marketplace/order_complete?id=223&txn=free
-# https://habr.com/ru/articles/537784/
 
 @bot.message_handler(commands=['start', 'help'])
 def start(message):
@@ -15,11 +12,10 @@ def start(message):
            "можете узнать курс валют. Чтобы узнать список " \
            "доступных валют, введите команду /values.\n" \
            "Чтобы узнать курс валют отправите сообщение боту в виде " \
-           "<имя валюты, цену которой он хочет узнать> " \
+           "<имя валюты, цену которой хотите узнать> " \
            "<имя валюты, в которой надо узнать цену первой валюты> " \
            "<количество первой валюты>"
     bot.send_message(message.chat.id, text)
-    # bot.reply_to(message, text)
 
 
 @bot.message_handler(commands=['values'])
@@ -31,31 +27,16 @@ def values(message):
 @bot.message_handler(content_types=['text'])
 def convert(message):
     words = message.text.split(' ')
-    if len(words) > 3 or len(words) < 2:
-        raise APIException("Введите корректное число параметров")
-
-    base, quote, amount = words
-    if base == quote:
-        raise APIException("Нельзя конвертировать одну и ту же валюту")
-    
     try:
-        base_true = base
-    except KeyError:
-        raise APIException("Валюта введена неправильно")
-        
-    try:
-        quote_true = quote
-    except KeyError:
-        raise APIException("Валюта введена неправильно")
-    
-    try:
-        amount_true = amount
-    except KeyError:
-        raise APIException("Количество введено неправильно")
-        
-    price = Converter.get_price(base_true, quote_true, amount_true)
-    text = f"Цена {amount_true} {base_true} в {quote_true}: {price}"
-    bot.send_message(message.chat.id, text)
+        if len(words) != 3:
+            bot.send_message(message.chat.id, 'Введите корректное число параметров')
+        else:
+            base, quote, amount = words
+            price = Converter.get_price(base, quote, amount, bot, message)
+            text = f"Цена {amount} {base} в {quote}: {price}"
+            bot.send_message(message.chat.id, text)
+    except APIException:
+        bot.send_message(message.chat.id, 'Проверьте введенные данные')
 
 
 if __name__ == '__main__':
