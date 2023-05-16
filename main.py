@@ -2,7 +2,7 @@ import requests
 import telebot
 
 from config import TOKEN, URL
-from extensions import Converter
+from extensions import Converter, APIException
 
 bot = telebot.TeleBot(TOKEN)
 
@@ -28,7 +28,10 @@ def values(message):
 
 @bot.message_handler(content_types=['text'])
 def convert(message):
-    base, quote, amount = message.text.split(' ')
+    words = message.text.split(' ')
+    if len(words) > 3 and len(words) < 2:
+        raise APIException("Введите корректное число параметров")
+    base, quote, amount = words
     price = Converter.get_price(base, quote, amount)
     text = f"Цена {amount} {base} в {quote}: {price}"
     bot.send_message(message.chat.id, text)
