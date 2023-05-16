@@ -7,6 +7,8 @@ from extensions import Converter, APIException
 bot = telebot.TeleBot(TOKEN)
 
 # https://apilayer.com/marketplace/order_complete?id=223&txn=free
+# https://habr.com/ru/articles/537784/
+
 @bot.message_handler(commands=['start', 'help'])
 def start(message):
     text = "Здравствуйте! С помощью этого бота вы " \
