@@ -31,12 +31,28 @@ def convert(message):
     words = message.text.split(' ')
     if len(words) > 3 or len(words) < 2:
         raise APIException("Введите корректное число параметров")
+
+    base, quote, amount = words
     if base == quote:
         raise APIException("Нельзя конвертировать одну и ту же валюту")
+    
+    try:
+        base_true = base
+    except KeyError:
+        raise APIException("Валюта введена неправильно")
         
-    base, quote, amount = words
-    price = Converter.get_price(base, quote, amount)
-    text = f"Цена {amount} {base} в {quote}: {price}"
+    try:
+        quote_true = quote
+    except KeyError:
+        raise APIException("Валюта введена неправильно")
+    
+    try:
+        amount_true = amount
+    except KeyError:
+        raise APIException("Количество введено неправильно")
+        
+    price = Converter.get_price(base_true, quote_true, amount_true)
+    text = f"Цена {amount_true} {base_true} в {quote_true}: {price}"
     bot.send_message(message.chat.id, text)
 
 
