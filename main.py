@@ -1,7 +1,7 @@
 import telebot
 
 from config import TOKEN
-from extensions import Converter, APIException, keys
+from extensions import Converter, keys
 
 bot = telebot.TeleBot(TOKEN)
 
@@ -21,8 +21,8 @@ def start(message):
 @bot.message_handler(commands=['values'])
 def values(message):
     text = "Список доступных валют: "
-    for key in keys.keys:
-        text = '\n'.join(text, key)
+    for key in keys.keys():
+        text = '\n'.join((text, key))
     bot.send_message(message.chat.id, text)
 
 
@@ -35,11 +35,16 @@ def convert(message):
         else:
             base, quote, amount = words
             price = Converter.get_price(base, quote, amount, bot, message)
-            text = f"Цена {amount} {base} в {quote}: {price}"
-            bot.send_message(message.chat.id, text)
-    except APIException:
+
+            if type(price) == bool:
+                pass
+            else:
+                text = f"Цена {amount} {base} в {quote}: {price}"
+                bot.send_message(message.chat.id, text)
+    except Exception:
         bot.send_message(message.chat.id, 'Проверьте введенные данные')
 
 
 if __name__ == '__main__':
     bot.polling(none_stop=True)
+    
