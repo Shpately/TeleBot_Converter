@@ -6,7 +6,6 @@ keys = {'доллар': 'USD',
         'евро': 'EUR',
         'рубль': 'RUB'}
 
-payload = {}
 headers = {
     "apikey": "ipT969LyS8V3ywjZGmnsUgDEvEPMIgwU"
 }
@@ -22,29 +21,36 @@ class Converter:
 
     @staticmethod
     def get_price(base, quote, amount, bot, message):
-        base_true, quote_true = None, None
-        
+        _, _ = None, None
+
         try:
             base_true = keys[base]
         except KeyError:
             bot.send_message(message.chat.id, 'Валюта введена неправильно')
+            return True
             # raise APIException("Валюта введена неправильно")
 
         try:
             quote_true = keys[quote]
         except KeyError:
             bot.send_message(message.chat.id, 'Валюта введена неправильно')
+            return True
             # raise APIException("Валюта введена неправильно")
-                
-        response = requests.get(URL, headers=headers)
 
-        if response.status_code == 200:
-            if base_true == quote_true:
-                bot.send_message(message.chat.id, 'Нельзя конвертировать одну и ту же валюту')
-                # raise APIException("Нельзя конвертировать одну и ту же валюту")
+        url = f"https://api.apilayer.com/exchangerates_data/convert?to={quote_true}&from={base_true}&amount={amount}"
+
+        if quote_true == keys[quote]:
+            response = requests.get(url, headers=headers)
+
+            if response.status_code == 200:
+                if base_true == quote_true:
+                    bot.send_message(message.chat.id, 'Нельзя конвертировать одну и ту же валюту')
+                    # raise APIException("Нельзя конвертировать одну и ту же валюту")
+                else:
+                    result = json.loads(response.content)['result']
+                    return result
             else:
-                result = json.loads(response.content)['result']
-                return result
-        else:
-            bot.send_message(message.chat.id, f"Взаимодействие с API невозможно: {response.status_code}")
-            # raise ConnectionError(f"Взаимодействие с API невозможно: {response.status_code}")
+                bot.send_message(message.chat.id, f"Взаимодействие с API невозможно: {response.status_code}")
+                return False
+                # raise ConnectionError(f"Взаимодействие с API невозможно: {response.status_code}")
+                
