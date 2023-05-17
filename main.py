@@ -1,6 +1,6 @@
 import telebot
 
-from config import TOKEN, URL
+from config import TOKEN
 from extensions import Converter, APIException, keys
 
 bot = telebot.TeleBot(TOKEN)
