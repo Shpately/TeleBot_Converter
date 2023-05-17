@@ -20,7 +20,9 @@ def start(message):
 
 @bot.message_handler(commands=['values'])
 def values(message):
-    text = "Список доступных валют: рубль, доллар, евро"
+    text = "Список доступных валют: "
+    for key in keys.keys:
+        text = '\n'.join(text, key)
     bot.send_message(message.chat.id, text)
 
 
