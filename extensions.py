@@ -1,5 +1,6 @@
 import requests
 import json
+from config import URL
 
 keys = {'доллар': 'USD',
         'евро': 'EUR',
@@ -36,7 +37,7 @@ class Converter:
             # raise APIException("Валюта введена неправильно")
 
         url = f"https://api.apilayer.com/exchangerates_data/convert?to={quote_true}&from={base_true}&amount={amount}"
-        response = requests.get(url, headers=headers)
+        response = requests.get(URL, headers=headers)
 
         if response.status_code == 200:
             if base_true == quote_true:
