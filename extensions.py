@@ -35,16 +35,16 @@ class Converter:
         except KeyError:
             bot.send_message(message.chat.id, 'Валюта введена неправильно')
             # raise APIException("Валюта введена неправильно")
-
-        url = f"https://api.apilayer.com/exchangerates_data/convert?to={quote_true}&from={base_true}&amount={amount}"
+                
         response = requests.get(URL, headers=headers)
 
         if response.status_code == 200:
             if base_true == quote_true:
-                raise APIException("Нельзя конвертировать одну и ту же валюту")
-
-            result = json.loads(response.content)['result']
-            return result
+                bot.send_message(message.chat.id, 'Нельзя конвертировать одну и ту же валюту')
+                # raise APIException("Нельзя конвертировать одну и ту же валюту")
+            else:
+                result = json.loads(response.content)['result']
+                return result
         else:
             bot.send_message(message.chat.id, f"Взаимодействие с API невозможно: {response.status_code}")
             # raise ConnectionError(f"Взаимодействие с API невозможно: {response.status_code}")
